@@ -1,23 +1,47 @@
 # Node Docker ExpressJS modules: JWT Authentication, Permissions, CRUD Example
 
-0. [Jak utworzyć strukturę plików?]()
+## Ogólne uruchomienie jak wygląda?
+
+> Upewnij się, że zmienna `MONGO_URI` w pliku `.env` wygląda tak:
+> ```
+> MONGO_URI=mongodb://root:example@mongodb:27017/your_db_name?authSource=admin
+> ```
+>
+> Upewnij się, że masz zainstalowane:
+> - Docker
+> - Node.js
+
+Procedura:
+```bash
+# enter directory and install dependencies
+cd express-docker-template
+npm install
+
+# build image as express-app
+docker build -t express-app .
+
+# build network for containers
+docker network create express-network
+
+# run MongoDB container in background
+docker run -d --name mongodb --network express-network -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=example mongo
+
+# run express-app container
+docker run --env-file .env --network express-network -p 5000:5000 express-app
+
+# TEST: 1. get User JWT
+curl -X POST http://localhost:5000/api/auth/login -H "Content-Type: application/json" -d '{"username": "user", "password": "password"}'
+
+# TEST: 2. get list of products
+curl -X GET http://localhost:5000/api/products -H "Authorization: Bearer <TOKEN>"
+```
+
+## Menu
+
 1. [Jak zbudować kontener?](#jak-zbudować-kontener)
 2. [Jak zatrzymać kontener?](#jak-zatrzymać-kontener)
 3. [Testowanie Aplikacji](#testowanie-aplikacji)
 4. [Jak zamknąć sieć Docker?](#jak-zamknąć-sieć-docker)
-
-## Jak utworzyć strukturę plików?
-
-Uruchom ten skrypt, aby utworzyć wraz z zawartością: /src, Dockerfile, .env, package.json
-
-> Pisane z wykorzystaniem MacOS.
-
-```bash
-sh create_files_structure.sh
-npm install
-```
-
-Następnie postępuj zgodnie z ponizszymi instrukcjami od wspólnego przyjaciela czata.
 
 > **#AIGeneratedContent**: przetestowane i działa ;)
 
